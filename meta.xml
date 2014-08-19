@@ -1,0 +1,27 @@
+<meta>
+    <info author="TrezeLurese" name="StaticGridList" version="0" type="script"/>
+    <script src="gridc.lua" type="client"/>
+    
+    <file src="panel.png"/>
+    
+    <export function="guiCreateStaticGridList" type="client"/>
+    <export function="guiStaticGridListAddColumn" type="client"/>
+    <export function="guiStaticGridListSetColumnTitle" type="client"/>
+    <export function="guiStaticGridListGetColumnTitle" type="client"/>
+    <export function="guiStaticGridListAddRow" type="client"/>
+    <export function="guiStaticGridListSetItemText" type="client"/>
+    <export function="guiStaticGridListGetItemText" type="client"/>
+    <export function="guiStaticGridListSetItemColor" type="client"/>
+    <export function="guiStaticGridListGetItemColor" type="client"/>
+    <export function="guiStaticGridListClear" type="client"/>
+    <export function="guiStaticGridListRemoveColumn" type="client"/>
+    <export function="guiStaticGridListRemoveRow" type="client"/>
+    <export function="guiStaticGridListSetItemSelectedColor" type="client"/>
+    <export function="guiStaticGridListGetItemSelectedColor" type="client"/>
+    <export function="guiStaticGridListSetItemJoinedColor" type="client"/>
+    <export function="guiStaticGridListGetItemJoinedColor" type="client"/>
+    <export function="guiStaticGridListSetSelectedItem" type="client"/>
+    <export function="guiStaticGridListGetSelectedItem" type="client"/>
+    <export function="guiStaticGridListGetRowCount" type="client"/>
+    <export function="guiStaticGridListGetColumnCount" type="client"/>
+</meta>
