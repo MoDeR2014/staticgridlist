@@ -3,7 +3,6 @@ local selectedRow={}
 local columnCount=0
 function guiCreateStaticGridList(id, x, y, w, h, rel, parent)
     if id < 0 then id = math.abs(id) end
-    if gridList[id]["Background"] then return false end
     
     if not rel then rel = false end
     if not parent then parent = nil end   
