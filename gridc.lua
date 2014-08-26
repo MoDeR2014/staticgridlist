@@ -1,25 +1,29 @@
 local gridList = {}
 local selectedRow={}
-local columnCount=0
-function guiCreateStaticGridList(id, x, y, w, h, rel, parent)
-    if id < 0 then id = math.abs(id) end
+local columnCount={}
+local staticListID = 0
+function guiCreateStaticGridList(x, y, w, h, rel, parent)
+
+    staticListID = staticListID+1
     
     if not rel then rel = false end
     if not parent then parent = nil end   
     
-    gridList[id]={}
-    gridList[id]["Column"]={}
-    gridList[id]["Row"]={}
-    gridList[id]["RowInColumn"]={}
-    selectedRow[id]={}
+    gridList[staticListID]={}
+    gridList[staticListID]["Column"]={}
+    gridList[staticListID]["Row"]={}
+    gridList[staticListID]["RowInColumn"]={}
+    selectedRow[staticListID]={}
     
-    gridList[id]["Background"] = guiCreateStaticImage(x-1, y-1, w+2, h+2, "panel.png", rel, parent)
-    guiSetProperty(gridList[id]["Background"], "ImageColours", "tl:FF333333 tr:FF333333 bl:FF333333 br:FF333333")
-    gridList[id]["Main"] = guiCreateStaticImage(1, 1, w, h, "panel.png", rel, gridList[id]["Background"])
-    guiSetProperty(gridList[id]["Main"], "ImageColours", "tl:FF000000 tr:FF000000 bl:FF000000 br:FF000000")
-    gridList[id]["Frame"] = guiCreateScrollPane(0, 0, w, h, rel, gridList[id]["Main"])
+    columnCount[staticListID] = 0
     
-    return gridList[id]["Frame"]
+    gridList[staticListID]["Background"] = guiCreateStaticImage(x-1, y-1, w+2, h+2, "panel.png", rel, parent)
+    guiSetProperty(gridList[staticListID]["Background"], "ImageColours", "tl:FF333333 tr:FF333333 bl:FF333333 br:FF333333")
+    gridList[staticListID]["Main"] = guiCreateStaticImage(1, 1, w, h, "panel.png", rel, gridList[staticListID]["Background"])
+    guiSetProperty(gridList[staticListID]["Main"], "ImageColours", "tl:FF000000 tr:FF000000 bl:FF000000 br:FF000000")
+    gridList[staticListID]["Frame"] = guiCreateScrollPane(0, 0, w, h, rel, gridList[staticListID]["Main"])
+    
+    return staticListID, gridList[staticListID]["Background"]
 end
 
 function guiStaticGridListAddColumn(id, text, width)
@@ -28,13 +32,13 @@ function guiStaticGridListAddColumn(id, text, width)
     local columnCreated = true
     local colID = 1
     
-    if columnCount < 1 then columnCreated = false end
+    if columnCount[id] < 1 then columnCreated = false end
     for i = 1, table.maxn(gridList[id]["Column"]) do colID = colID + 1 end
     
     local createXPos = 0
     local createWidth = 0
     
-    local getFrameWidth, getFrameHeight = guiGetSize(gridList[id]["Frame"], false)
+    local getFrameWidth, getFrameHeight = guiGetSize(gridList[id]["Main"], false)
     
     if not columnCreated then 
     
@@ -47,11 +51,11 @@ function guiStaticGridListAddColumn(id, text, width)
         
     end
     
-    gridList[id]["Column"][colID] = guiCreateLabel(createXPos+createWidth, 1/getFrameHeight, createXPos+width, 15/getFrameHeight, tostring(text), true, gridList[id]["Frame"])
+    gridList[id]["Column"][colID] = guiCreateLabel(createXPos+createWidth, 1/getFrameHeight, width, 15/getFrameHeight, tostring(text), true, gridList[id]["Frame"])
     guiSetFont(gridList[id]["Column"][colID], "default-small")
     guiLabelSetHorizontalAlign(gridList[id]["Column"][colID], "center", false)
     guiLabelSetVerticalAlign(gridList[id]["Column"][colID], "center")
-    columnCount=columnCount+1
+    columnCount[id]=columnCount[id]+1
     
     local newPos, _ = guiGetPosition(gridList[id]["Column"][colID], false)
     local newWidth, _ = guiGetSize(gridList[id]["Column"][colID], false)
@@ -63,6 +67,8 @@ function guiStaticGridListAddColumn(id, text, width)
         for i = 1, table.maxn(gridList[id]["Row"]) do guiSetSize(gridList[id]["Row"][i], checkWidth-10, 16, false) end
         
     end
+    
+    return colID
 end
 
 function guiStaticGridListSetColumnTitle(id, colID, text)
@@ -115,6 +121,7 @@ function guiStaticGridListAddRow(id)
         end 
     end)
     
+    return rowID
 end
 
 function guiStaticGridListSetItemText(id, rowID, colID, text)
@@ -175,7 +182,7 @@ end
 
 function guiStaticGridListClear(id)
     if not gridList[id]["Row"][1] then return nil end
-    for i = 1, table.maxn(gridList[id]["Row"]) do destroyElement(gridList[id]["Row"][i]) end
+    for i = 1, table.maxn(gridList[id]["Row"]) do if gridList[id]["Row"][i] then table.remove(gridList[id]["Row"]) destroyElement(gridList[id]["Row"][i]) end end
 end
 
 function guiStaticGridListRemoveColumn(id, colID)
@@ -185,11 +192,12 @@ function guiStaticGridListRemoveColumn(id, colID)
     colX, _ = guiGetPosition(gridList[id]["Column"][colID], false)
     colWid, _ = guiGetSize(gridList[id]["Column"][colID], false)
     
+    table.remove(gridList[id]["Column"], colID)
     destroyElement(gridList[id]["Column"][colID])
     for i = 1, table.maxn(gridList[id]["Row"]) do if gridList[id]["RowInColumn"][i][colID] then destroyElement(gridList[id]["RowInColumn"][i][colID]) end end
-    columnCount = columnCount-1
+    columnCount[id] = columnCount[id]-1
     
-    if columnCount < 1 then destroyElement(gridList[id]["TopLine"]) guiStaticGridListClear(id) return 1 end
+    if columnCount[id] < 1 then destroyElement(gridList[id]["TopLine"]) guiStaticGridListClear(id) return 1 end
     
     
     for i = colID, table.maxn(gridList[id]["Column"]) do
@@ -233,6 +241,7 @@ function guiStaticGridListRemoveRow(id, rowID)
     if not gridList[id]["Row"][rowID] then return nil end
     --local newLocalX, _ = guiGetPosition(gridList[id]["Row"][rowID])
     
+    table.remove(gridList[id]["Row"], rowID)
     destroyElement(gridList[id]["Row"][rowID])
     gridList[id]["Row"][rowID] = nil
     
@@ -325,7 +334,7 @@ end
 
 function guiStaticGridListGetColumnCount(id)
     if not gridList[id]["Frame"] then return nil end
-    return columnCount
+    return columnCount[id]
 end
 
 --[[addEventHandler("onClientResourceStart", root,
@@ -349,11 +358,11 @@ end
         guiStaticGridListSetItemText(1, 4, 3, "C3R4")
         guiStaticGridListSetItemText(1, 3, 3, "C3R3")
         guiStaticGridListSetItemText(1, 4, 4, "C4R4")
-        guiStaticGridListRemoveColumn(1, 1)
+        --guiStaticGridListRemoveColumn(1, 1)
         --guiStaticGridListRemoveColumn(1, 2)
         --guiStaticGridListRemoveColumn(1, 3)
         --guiStaticGridListRemoveColumn(1, 4)
-        guiStaticGridListRemoveRow(1, 2)
+        --guiStaticGridListRemoveRow(1, 2)
         --guiStaticGridListClear(1)
         guiStaticGridListSetItemSelectedColor(1, 2, 255, 0, 0)
         guiStaticGridListSetItemSelectedColor(1, 3, 0, 255, 0)
@@ -363,9 +372,9 @@ end
         guiStaticGridListSetItemJoinedColor(1, 4, 0, 0, 100)
         guiStaticGridListSetColumnTitle(1, 1, "Тест")
         guiStaticGridListSetSelectedItem(1, 2)
-        outputDebugString(guiStaticGridListGetSelectedItem(1).." "..guiStaticGridListGetRowCount(1).." "..guiStaticGridListGetColumnCount(1).." "..guiStaticGridListGetItemText(1, 1, 2))
+        outputDebugString(tostring(guiStaticGridListGetSelectedItem(1)).." "..tostring(guiStaticGridListGetRowCount(1)).." "..tostring(guiStaticGridListGetColumnCount(1)).." "..tostring(guiStaticGridListGetItemText(1, 1, 2)))
         guiStaticGridListSetItemColor(1, 1, 2, 255, 0, 0)
-    end)]]
+        end)]]
     
     
     
