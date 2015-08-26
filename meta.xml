@@ -5,6 +5,8 @@
     <file src="panel.png"/>
     
     <export function="guiCreateStaticGridList" type="client"/>
+    <export function="guiStaticGridListSetVisible" type="client"/>
+    <export function="guiStaticGridListSetAlpha" type="client"/>
     <export function="guiStaticGridListAddColumn" type="client"/>
     <export function="guiStaticGridListSetColumnTitle" type="client"/>
     <export function="guiStaticGridListGetColumnTitle" type="client"/>
@@ -22,6 +24,7 @@
     <export function="guiStaticGridListGetItemJoinedColor" type="client"/>
     <export function="guiStaticGridListSetSelectedItem" type="client"/>
     <export function="guiStaticGridListGetSelectedItem" type="client"/>
+    <export function="guiStaticGridListGetSelectedItemText" type="client"/>
     <export function="guiStaticGridListGetRowCount" type="client"/>
     <export function="guiStaticGridListGetColumnCount" type="client"/>
 </meta>
