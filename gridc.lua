@@ -26,6 +26,20 @@ function guiCreateStaticGridList(x, y, w, h, rel, parent)
     return staticListID, gridList[staticListID]["Background"]
 end
 
+function guiStaticGridListSetVisible(id, bool)
+    if bool ~= true and bool ~= false then return false end
+    guiSetVisible(gridList[id]["Background"], bool);
+    guiSetVisible(gridList[id]["Main"], bool);
+    guiSetVisible(gridList[id]["Frame"], bool);
+end
+
+function guiStaticGridListSetAlpha(id, int)
+    if int < 0 and int > 1 then return false end
+    guiSetAlpha(gridList[id]["Background"], int);
+    guiSetAlpha(gridList[id]["Main"], int);
+    guiSetAlpha(gridList[id]["Frame"], int);
+end
+
 function guiStaticGridListAddColumn(id, text, width)
     if not gridList[id]["Frame"] then return nil end
     if width < 0 or width > 1 then width = 1 end
@@ -323,6 +337,16 @@ function guiStaticGridListGetSelectedItem(id)
         end
     end
     return selrow
+end
+
+function guiStaticGridListGetSelectedItemText ( id, colID )
+    local item = guiStaticGridListGetSelectedItem ( id );
+    local ItemText = guiStaticGridListGetItemText ( id, item, colID or 1 );
+    if ( ItemText ~= "" ) then 
+		return ItemText 
+	else 
+		return false 
+	end
 end
 
 function guiStaticGridListGetRowCount(id)
